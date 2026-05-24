@@ -1,0 +1,11 @@
+.venv
+reference_**.png
+!**cleanup.py
+__pycache__
+.pytest_cache
+bin
+lib
+lib64
+pyvenv.cfg
+include
+.DS_Store

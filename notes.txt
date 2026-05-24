@@ -1,0 +1,20 @@
+#create venv
+python3 -m venv .venv
+
+# start venv
+source .venv/bin/activate
+
+# save current requirements
+pip freeze > requirements.txt
+
+# install venv from requirements
+pip3 install -r requirements.txt
+
+# twilio environment variables
+TWILIO_ACCOUNT_SID=<account sid>
+TWILIO_AUTH_TOKEN=<auth token>
+TWILIO_NUMBER=<twilio number>
+MY_NUMBER=<my number>
+
+# copypaste reference
+~
