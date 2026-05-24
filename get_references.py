@@ -29,6 +29,8 @@ if __name__ == "__main__":
             cv2.destroyAllWindows()
             break
         else:
+            cv2.imshow("HDMI Video Capture", cv2.resize(src=frame, dsize=(1000, 500)))
+            cv2.waitKey(1)
             # save frame
             cv2.imwrite(save_folder + "reference_" + str(frame_counter) + ".png", frame)
             cv2.waitKey(1)
