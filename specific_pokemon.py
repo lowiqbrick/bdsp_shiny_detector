@@ -1,49 +1,123 @@
 import cv2
-import numpy as np
+import time
 import utils
+from enum import Enum
+
+
+class SearchEngineState(Enum):
+    UNINITIALIZED = 1
+    NOTHING_DETECTED = 2
+    APPEARING = 3
+    MENU = 4
 
 
 class PokemonSearchEngine:
-    def __init__(self):
-        self.mewtwo_reference = cv2.imread("selected_references/mewtwo_reference.png")
-        assert self.mewtwo_reference is not None
+    MENU_TIMEOUT = 1.0
 
-    def is_mewtwo(self, captured_image: cv2.typing.MatLike) -> bool:
-        assert self.mewtwo_reference is not None
+    def __init__(self):
+        self.palkia_appears_reference = cv2.imread(
+            "selected_references/palkia_appears.png"
+        )
+        self.is_menu_present_reference = cv2.imread(
+            "selected_references/menu_present.png"
+        )
+        self.state = SearchEngineState.UNINITIALIZED
+        self.current_duration_start = None
+        self.duration_appear_to_menu = None
+        assert self.palkia_appears_reference is not None
+        assert self.is_menu_present_reference is not None
+
+    def is_palkia_appearing(self, captured_image: cv2.typing.MatLike) -> bool:
+        assert self.palkia_appears_reference is not None
         # Compare the status bar area to see if the pokemon is present
         diff_percent = utils.get_difference_percentage(
-            self.mewtwo_reference, captured_image, utils.opponent_stat_rec()
+            self.palkia_appears_reference, captured_image, utils.appearing_textbox()
         )
 
         return diff_percent < 1.5
 
-    def is_mewtwo_normal(self, captured_image: cv2.typing.MatLike) -> bool:
-        assert self.mewtwo_reference is not None
+    def is_menu_present(self, captured_image: cv2.typing.MatLike) -> bool:
+        assert self.is_menu_present_reference is not None
 
         # Compare the entire pokemon sprite area
         diff_percent = utils.get_difference_percentage(
-            self.mewtwo_reference, captured_image, utils.opponent_pokemon()
+            self.is_menu_present_reference, captured_image, utils.fight_menu()
         )
 
         return diff_percent < 1.5
 
-    def is_mewtwo_shiny(self, captured_image: cv2.typing.MatLike) -> bool:
-        assert self.mewtwo_reference is not None
+    def update_state(self, frame: cv2.typing.MatLike):
+        is_appearing = self.is_palkia_appearing(frame)
+        is_menu_present = self.is_menu_present(frame)
+        if is_appearing:
+            self.state = SearchEngineState.APPEARING
+        elif is_menu_present:
+            self.state = SearchEngineState.MENU
+        # only change to nothing detected after certain detection
+        # to prevent startup problems
+        elif self.state != SearchEngineState.UNINITIALIZED:
+            self.state = SearchEngineState.NOTHING_DETECTED
 
-        # Compare the entire pokemon sprite area
-        diff_percent = utils.get_difference_percentage(
-            self.mewtwo_reference, captured_image, utils.opponent_pokemon()
-        )
+    def update_current_duration_timer(self, last_state: SearchEngineState):
+        # reset/start duration timer
+        # on disappearing textbox
+        if (
+            last_state == SearchEngineState.APPEARING
+            and self.state == SearchEngineState.NOTHING_DETECTED
+        ):
+            self.current_duration_start = time.time()
 
-        return diff_percent >= 1.5
+    def is_menu_present_late(self, current_duration: float) -> bool:
+        if self.duration_appear_to_menu is None:
+            return False
+
+        return self.duration_appear_to_menu + self.MENU_TIMEOUT < current_duration
+
+    def ran_in_menu_timeout(self, last_state: SearchEngineState) -> bool:
+        if self.current_duration_start is None:
+            return False
+
+        # save/compare timer on menu detection
+        # on previous cycle
+        current_duration = time.time() - self.current_duration_start
+        if (
+            self.state == SearchEngineState.MENU
+            and last_state == SearchEngineState.NOTHING_DETECTED
+        ):
+            if self.current_duration_start is not None:
+                # no reference time saved
+                if self.duration_appear_to_menu is None:
+                    self.duration_appear_to_menu = current_duration
+                # reference time saved
+                elif self.is_menu_present_late(current_duration):
+                    return True
+        return False
+
+    def is_menu_late(self, frame: cv2.typing.MatLike) -> bool:
+        """
+        This function processes a frame to calculate the time between
+        the message that the pokemon appears and the fight menu presence.
+
+        If a shiny pokemon appeared a small visual effect occurs that delays
+        the appearance. If the current duration is significantly longer
+        than the last a shiny is assumed to be present.
+
+        Returns:
+            bool: True if current duration is significantly longer than the last
+        """
+        last_state = self.state
+        self.update_state(frame)
+
+        self.update_current_duration_timer(last_state)
+
+        if self.current_duration_start is None:
+            return False
+
+        if self.ran_in_menu_timeout(last_state):
+            return True
+        else:
+            return False
 
 
 if __name__ == "__main__":
-    search_engine = PokemonSearchEngine()
-    black_image = np.zeros((1020, 1980, 3))
-    print(
-        "does reference of mewtwo equal a black image: "
-        + str(search_engine.is_mewtwo(black_image))
-    )
-    for index in range(6, 1):
-        print(index)
+    pass

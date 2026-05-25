@@ -5,6 +5,7 @@ import os
 from gpiozero import LED
 
 import utils
+import specific_pokemon
 
 
 def main():
@@ -31,7 +32,7 @@ def main():
         # capture frame
         success, frame = cap.read()
 
-        if not success:
+        if (not success) or (frame is None):
             loop_structs.logger.add_printout("no frame")
             cv2.destroyAllWindows()
         else:
@@ -72,44 +73,14 @@ def image_processing(
         + utils.period_to_str(round(loop_structs.period_timer.get_passed_time(), 2))
         + f"s period (av {loop_structs.macro_duration.get_duration_str()});"
     )
+    if loop_structs.search_engine.state == specific_pokemon.SearchEngineState.APPEARING:
+        loop_structs.logger.add_printout(" palkia appears;")
+    if loop_structs.search_engine.state == specific_pokemon.SearchEngineState.MENU:
+        loop_structs.logger.add_printout(" menu;")
 
-    # Debug: Calculate and log the actual difference for the status bar
-    if loop_structs.search_engine.mewtwo_reference is not None:
-        stat_diff = utils.get_difference_percentage(
-            loop_structs.search_engine.mewtwo_reference,
-            frame,
-            utils.opponent_stat_rec(),
-        )
-        loop_structs.logger.add_printout(f" stat_diff: {stat_diff:.2f}%;")
+    is_detected = loop_structs.search_engine.is_menu_present(frame)
 
-        # Debug: Calculate and log the actual difference for the pokemon area
-        poke_diff = utils.get_difference_percentage(
-            loop_structs.search_engine.mewtwo_reference, frame, utils.opponent_pokemon()
-        )
-        loop_structs.logger.add_printout(f" poke_diff: {poke_diff:.2f}%;")
-
-    is_detected = loop_structs.search_engine.is_mewtwo_normal(frame)
-    if is_detected:
-        loop_structs.logger.add_printout(" mewtwo detected;")
-    else:
-        loop_structs.logger.add_printout(" mewtwo not detected;")
-
-    loop_structs.period_timer.preemptive_check(
-        is_detected, loop_variables.is_last_detected
-    )
-    if loop_structs.period_timer.is_pokemon_present(
-        loop_structs.macro_duration.time_for_shiny()
-    ):
-        loop_structs.period_imager.save_encounter(frame)
-
-    if (
-        not is_detected
-        and loop_structs.period_timer.get_passed_time()
-        >= loop_structs.macro_duration.time_for_shiny()
-    ) or (
-        loop_structs.search_engine.is_mewtwo(frame)
-        and loop_structs.search_engine.is_mewtwo_shiny(frame)
-    ):
+    if loop_structs.search_engine.is_menu_late(frame):
         handle_shiny_found(frame, controller, loop_structs)
 
     return is_detected
@@ -128,7 +99,7 @@ def handle_shiny_found(frame, controller, loop_structs):
     except ConnectionError:
         print("\nfailed to send message")
     finally:
-        raise utils.NoNewMewtwoException()
+        raise utils.MenuTimeout()
 
 
 def loop_update(
@@ -147,24 +118,11 @@ def loop_update(
         )
     if "PYTEST_CURRENT_TEST" not in os.environ:
         print(loop_structs.logger.print(), end="")
-
-    # take sample images
-    loop_structs.period_imager.take_image(
-        loop_structs.period_timer.get_passed_time(),
-        frame,
-        loop_structs.macro_duration.time_for_shiny(),
-    )
-
-    # update macro length
-    if (
-        loop_variables.period_length_last_loop
-        > loop_structs.period_timer.get_passed_time()
-    ):
-        loop_structs.macro_duration.update(loop_variables.period_length_last_loop)
     loop_variables.period_length_last_loop = loop_structs.period_timer.get_passed_time()
 
     # update for next period
     if not is_detected and loop_variables.is_last_detected:
+        loop_structs.macro_duration.update(loop_variables.period_length_last_loop)
         loop_variables.reset_counter += 1
         loop_structs.period_timer.reset()
         loop_structs.period_imager.reset(loop_variables.reset_counter)
@@ -179,7 +137,7 @@ def loop_update(
 if __name__ == "__main__":
     try:
         main()
-    except utils.NoNewMewtwoException as e:
+    except utils.MenuTimeout as e:
         print(f"\n{e.message}")
     except KeyboardInterrupt:
         print("\nmanual intervention")

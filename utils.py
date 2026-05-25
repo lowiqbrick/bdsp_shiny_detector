@@ -36,14 +36,14 @@ class Rectangle:
         return not self.is_point_in_rectangle(point)
 
 
-def opponent_stat_rec():
-    # returns rectangle with the opponents status
-    return Rectangle(Point(300, 130), Point(840, 260))
+def appearing_textbox():
+    """returns rectangle with the '(pokemon name) appears!' textbox"""
+    return Rectangle(Point(300, 900), Point(525, 950))
 
 
-def opponent_pokemon():
-    # returns rectangle with the opponents pokemon sprite
-    return Rectangle(Point(1150, 80), Point(1550, 450))
+def fight_menu():
+    """returns rectangle with the 'pokemon' part of the fight menu"""
+    return Rectangle(Point(1550, 750), Point(1875, 825))
 
 
 def is_image_part_equal(
@@ -86,20 +86,6 @@ def get_difference_percentage(
     # Check if ANY of the 3 color channels (BGR) differ
     mask = np.any(diff > threshold, axis=2)
     return float((np.sum(mask) / mask.size) * 100)
-
-
-def is_status_menu_equal(
-    reference_image: cv2.typing.MatLike,
-    captured_image: cv2.typing.MatLike,
-) -> bool:
-    return is_image_part_equal(reference_image, captured_image, opponent_stat_rec())
-
-
-def is_pokemon_equal(
-    reference_image: cv2.typing.MatLike,
-    captured_image: cv2.typing.MatLike,
-) -> bool:
-    return is_image_part_equal(reference_image, captured_image, opponent_pokemon())
 
 
 def save_shiny(image: cv2.typing.MatLike):
@@ -207,12 +193,6 @@ class PeriodImager:
             self.__image_taken = True
 
     def reset(self, reset_counter: int):
-        if (
-            not self.__image_taken
-            and reset_counter > 2
-            and ("PYTEST_CURRENT_TEST" not in os.environ)
-        ):
-            print("\nmewtwo image not taken in cycle " + str(datetime.datetime.now()))
         self.__image_taken = False
         if (reset_counter % 5) == 0:
             # Run cleanup as a background process to avoid blocking the main detection loop
@@ -226,13 +206,6 @@ class PeriodTime:
 
     def get_passed_time(self) -> float:
         return time.time() - self.period_time
-
-    def preemptive_check(self, is_detected: bool, is_last_detected: bool):
-        if not is_detected and is_last_detected:
-            self.reset()
-
-    def is_pokemon_present(self, time_for_shiny: float) -> bool:
-        return self.get_passed_time() >= time_for_shiny
 
     def reset(self):
         self.period_time = time.time()
@@ -261,11 +234,6 @@ class MacroDuration:
         if self._duration is None or self._duration <= self._time_for_shiny_offset:
             return 300
         return self._duration - self._time_for_shiny_offset
-
-    def should_shiny_be_present(self) -> bool:
-        if self._duration is None:
-            return False
-        return self._duration >= self.time_for_shiny()
 
     def get_duration_str(self) -> str:
         if self._duration is None:
@@ -300,9 +268,9 @@ class LoopVariables:
         self.period_length_last_loop: float = -300.0
 
 
-class NoNewMewtwoException(Exception):
+class MenuTimeout(Exception):
     def __init__(self):
-        self.message = "the loop didn't detect a normal mewtwo after the timeout passed"
+        self.message = "the menu timed out"
         super().__init__(self.message)
 
 

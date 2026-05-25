@@ -10,53 +10,74 @@ import numpy as np
 Device.pin_factory = MockFactory()
 
 
+def main_iteration(
+    image: cv2.typing.MatLike,
+    controller: LED,
+    loop_structs: utils.LoopStructs,
+    loop_variables: utils.LoopVariables,
+):
+    start_time = time.time()
+    is_detected = main.image_processing(image, controller, loop_structs, loop_variables)
+    main.loop_update(is_detected, start_time, image, loop_structs, loop_variables)
+
+
+def main_cycle(
+    list_timings: list[float],
+    black_image: cv2.typing.MatLike,
+    appear_image: cv2.typing.MatLike,
+    menu_image: cv2.typing.MatLike,
+    controller: LED,
+    loop_structs: utils.LoopStructs,
+    loop_variables: utils.LoopVariables,
+):
+    assert len(list_timings) == 4
+
+    # load game; nothing to detect
+    main_iteration(black_image, controller, loop_structs, loop_variables)
+    time.sleep(list_timings[0])
+    # pokemon appears
+    main_iteration(appear_image, controller, loop_structs, loop_variables)
+    time.sleep(list_timings[1])
+    # time between appearance and menu
+    main_iteration(black_image, controller, loop_structs, loop_variables)
+    time.sleep(list_timings[2])
+    # menu shows up
+    main_iteration(menu_image, controller, loop_structs, loop_variables)
+    time.sleep(list_timings[3])
+
+
 def test_regular():
-    mewtwo_image = cv2.imread("selected_references/mewtwo_reference.png")
-    assert mewtwo_image is not None
+    appear_image = cv2.imread("selected_references/palkia_appears.png")
+    menu_image = cv2.imread("selected_references/menu_present.png")
+    assert appear_image is not None
+    assert menu_image is not None
     black_image = np.zeros((1080, 1920, 3))
     loop_structs = utils.LoopStructs()
     loop_variables = utils.LoopVariables()
     controller = LED(21)
+    regular_timing = [0.5, 0.5, 0.5, 0.5]
 
     # get through startup process
-    start_time = time.time()
-    is_detected = main.image_processing(
-        black_image, controller, loop_structs, loop_variables
-    )
-    main.loop_update(is_detected, start_time, black_image, loop_structs, loop_variables)
-    time.sleep(17.5)
-
-    start_time = time.time()
-    is_detected = main.image_processing(
-        mewtwo_image, controller, loop_structs, loop_variables
-    )
-    time.sleep(1.5)
-    main.loop_update(
-        is_detected, start_time, mewtwo_image, loop_structs, loop_variables
+    main_cycle(
+        regular_timing,
+        black_image,
+        appear_image,
+        menu_image,
+        controller,
+        loop_structs,
+        loop_variables,
     )
 
     for _ in range(0, 3):
-        start_time = time.time()
-        is_detected = main.image_processing(
-            black_image, controller, loop_structs, loop_variables
+        main_cycle(
+            regular_timing,
+            black_image,
+            appear_image,
+            menu_image,
+            controller,
+            loop_structs,
+            loop_variables,
         )
-        main.loop_update(
-            is_detected, start_time, black_image, loop_structs, loop_variables
-        )
-        time.sleep(17.5)
-        # set is_detected to True
-        start_time = time.time()
-        is_detected = main.image_processing(
-            mewtwo_image, controller, loop_structs, loop_variables
-        )
-        time.sleep(1.5)
-        main.loop_update(
-            is_detected, start_time, mewtwo_image, loop_structs, loop_variables
-        )
-
-    assert loop_variables.period_length_last_loop == pytest.approx(
-        expected=19.0, abs=0.02
-    )
 
     # do one more black image to count the last for-loop iteration
     start_time = time.time()
@@ -65,72 +86,55 @@ def test_regular():
     )
     main.loop_update(is_detected, start_time, black_image, loop_structs, loop_variables)
 
+    assert loop_variables.period_length_last_loop == pytest.approx(expected=2, rel=0.1)
     assert loop_variables.reset_counter == 4
 
 
 def test_fail_on_irregular():
     # expect an exception to be raised
-    with pytest.raises(utils.NoNewMewtwoException):
-        mewtwo_image = cv2.imread("selected_references/mewtwo_reference.png")
-        assert mewtwo_image is not None
+    with pytest.raises(utils.MenuTimeout):
+        appear_image = cv2.imread("selected_references/palkia_appears.png")
+        menu_image = cv2.imread("selected_references/menu_present.png")
+        assert appear_image is not None
+        assert menu_image is not None
         black_image = np.zeros((1080, 1920, 3))
         loop_structs = utils.LoopStructs()
         loop_variables = utils.LoopVariables()
         controller = LED(21)
+        regular_timing = [0.5, 0.5, 0.5, 0.5]
+        shiny_timing = [0.5, 0.5, loop_structs.search_engine.MENU_TIMEOUT + 0.6, 0.5]
 
         # get through startup process
-        start_time = time.time()
-        is_detected = main.image_processing(
-            black_image, controller, loop_structs, loop_variables
-        )
-        main.loop_update(
-            is_detected, start_time, black_image, loop_structs, loop_variables
-        )
-        time.sleep(17.5)
-
-        start_time = time.time()
-        is_detected = main.image_processing(
-            mewtwo_image, controller, loop_structs, loop_variables
-        )
-        time.sleep(1.5)
-        main.loop_update(
-            is_detected, start_time, mewtwo_image, loop_structs, loop_variables
+        main_cycle(
+            regular_timing,
+            black_image,
+            appear_image,
+            menu_image,
+            controller,
+            loop_structs,
+            loop_variables,
         )
 
         # one regular cycle
-        start_time = time.time()
-        is_detected = main.image_processing(
-            black_image, controller, loop_structs, loop_variables
-        )
-        main.loop_update(
-            is_detected, start_time, black_image, loop_structs, loop_variables
-        )
-        time.sleep(17.5)
-        # set is_detected to True
-        start_time = time.time()
-        is_detected = main.image_processing(
-            mewtwo_image, controller, loop_structs, loop_variables
-        )
-        time.sleep(1.5)
-        main.loop_update(
-            is_detected, start_time, mewtwo_image, loop_structs, loop_variables
+        main_cycle(
+            regular_timing,
+            black_image,
+            appear_image,
+            menu_image,
+            controller,
+            loop_structs,
+            loop_variables,
         )
 
         # give black image in timeout to simulate shiny
-        start_time = time.time()
-        is_detected = main.image_processing(
-            black_image, controller, loop_structs, loop_variables
-        )
-        main.loop_update(
-            is_detected, start_time, black_image, loop_structs, loop_variables
-        )
-        time.sleep(18.5)
-        start_time = time.time()
-        is_detected = main.image_processing(
-            black_image, controller, loop_structs, loop_variables
-        )
-        main.loop_update(
-            is_detected, start_time, mewtwo_image, loop_structs, loop_variables
+        main_cycle(
+            shiny_timing,
+            black_image,
+            appear_image,
+            menu_image,
+            controller,
+            loop_structs,
+            loop_variables,
         )
 
 

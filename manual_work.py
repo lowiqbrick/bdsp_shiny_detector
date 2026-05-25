@@ -105,18 +105,13 @@ def gray_comparison_image(
 
 
 if __name__ == "__main__":
-    mewtwo_reference = cv2.imread(
-        "selected_references/mewtwo_reference.png", cv2.IMREAD_GRAYSCALE
-    )
-    color_channel_reference = cv2.imread(
-        "selected_references/color_channel_reference.png", cv2.IMREAD_GRAYSCALE
-    )
-    assert mewtwo_reference is not None
-    assert color_channel_reference is not None
-
+    palkia_appears = cv2.imread("selected_references/palkia_appears.png")
+    menu = cv2.imread("selected_references/menu_present.png")
+    assert palkia_appears is not None
+    assert menu is not None
     cv2.imshow(
         "pixel example",
-        gray_comparison_image(mewtwo_reference, color_channel_reference),
+        show_pixel_in_image(palkia_appears, utils.Point(525, 950), 100),
     )
     cv2.waitKey(1)
 
