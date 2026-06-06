@@ -18,6 +18,9 @@ class PokemonSearchEngine:
         self.palkia_appears_reference = cv2.imread(
             "selected_references/palkia_appears.png"
         )
+        self.giratina_appearing_reference = cv2.imread(
+            "selected_references/giratina_appears.png"
+        )
         self.is_menu_present_reference = cv2.imread(
             "selected_references/menu_present.png"
         )
@@ -25,6 +28,7 @@ class PokemonSearchEngine:
         self.current_duration_start = None
         self.duration_appear_to_menu = None
         assert self.palkia_appears_reference is not None
+        assert self.giratina_appearing_reference is not None
         assert self.is_menu_present_reference is not None
 
     def is_palkia_appearing(self, captured_image: cv2.typing.MatLike) -> bool:
@@ -32,6 +36,15 @@ class PokemonSearchEngine:
         # Compare the status bar area to see if the pokemon is present
         diff_percent = utils.get_difference_percentage(
             self.palkia_appears_reference, captured_image, utils.appearing_textbox()
+        )
+
+        return diff_percent < 1.5
+
+    def is_giratina_appearing(self, captured_image: cv2.typing.MatLike) -> bool:
+        assert self.giratina_appearing_reference is not None
+        # Compare the status bar area to see if the pokemon is present
+        diff_percent = utils.get_difference_percentage(
+            self.giratina_appearing_reference, captured_image, utils.appearing_textbox()
         )
 
         return diff_percent < 1.5
@@ -47,7 +60,9 @@ class PokemonSearchEngine:
         return diff_percent < 1.5
 
     def update_state(self, frame: cv2.typing.MatLike):
-        is_appearing = self.is_palkia_appearing(frame)
+        is_appearing = self.is_giratina_appearing(frame) or self.is_palkia_appearing(
+            frame
+        )
         is_menu_present = self.is_menu_present(frame)
         if is_appearing:
             self.state = SearchEngineState.APPEARING

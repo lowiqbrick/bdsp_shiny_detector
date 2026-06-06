@@ -38,7 +38,7 @@ class Rectangle:
 
 def appearing_textbox():
     """returns rectangle with the '(pokemon name) appears!' textbox"""
-    return Rectangle(Point(300, 900), Point(525, 950))
+    return Rectangle(Point(300, 900), Point(575, 950))
 
 
 def fight_menu():
