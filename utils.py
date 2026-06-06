@@ -198,7 +198,7 @@ class PeriodImager:
     def reset(self, reset_counter: int):
         self.__image_taken = False
         if (reset_counter % 5) == 0:
-            subprocess.Popen(["python3", "-m", " references.cleanup"])
+            subprocess.Popen(["python3", "-m", "references.cleanup"])
 
 
 class PeriodTime:
