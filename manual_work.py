@@ -105,13 +105,13 @@ def gray_comparison_image(
 
 
 if __name__ == "__main__":
-    giratina_appears = cv2.imread("selected_references/giratina_appears.png")
+    giratina_appears = cv2.imread("selected_references/giratina_menu.png")
     menu = cv2.imread("selected_references/menu_present.png")
     assert giratina_appears is not None
     assert menu is not None
     cv2.imshow(
         "pixel example",
-        show_pixel_in_image(giratina_appears, utils.Point(575, 950), 100),
+        show_pixel_in_image(giratina_appears, utils.Point(1320, 200), 100),
     )
     cv2.waitKey(1)
 

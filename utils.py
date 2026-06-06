@@ -14,6 +14,9 @@ class Point:
         self.x = x
         self.y = y
 
+    def __add__(self, offset: int):
+        return Point(self.x + offset, self.y + offset)
+
 
 class Rectangle:
     def __init__(self, top_left: Point, bottom_right: Point):
@@ -195,9 +198,7 @@ class PeriodImager:
     def reset(self, reset_counter: int):
         self.__image_taken = False
         if (reset_counter % 5) == 0:
-            # Run cleanup as a background process to avoid blocking the main detection loop
-            # This prevents "hiccups" in the timing method
-            subprocess.Popen(["python3", "references/cleanup.py"])
+            subprocess.Popen(["python3", "-m", " references.cleanup"])
 
 
 class PeriodTime:

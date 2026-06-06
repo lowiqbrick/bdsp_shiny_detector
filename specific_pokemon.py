@@ -21,6 +21,9 @@ class PokemonSearchEngine:
         self.giratina_appearing_reference = cv2.imread(
             "selected_references/giratina_appears.png"
         )
+        self.giratina_menu_reference = cv2.imread(
+            "selected_references/giratina_menu.png"
+        )
         self.is_menu_present_reference = cv2.imread(
             "selected_references/menu_present.png"
         )
@@ -29,6 +32,7 @@ class PokemonSearchEngine:
         self.duration_appear_to_menu = None
         assert self.palkia_appears_reference is not None
         assert self.giratina_appearing_reference is not None
+        assert self.giratina_menu_reference is not None
         assert self.is_menu_present_reference is not None
 
     def is_palkia_appearing(self, captured_image: cv2.typing.MatLike) -> bool:
@@ -48,6 +52,12 @@ class PokemonSearchEngine:
         )
 
         return diff_percent < 1.5
+
+    def get_giratina_ref_pixel(self, captured_image: cv2.typing.MatLike) -> list[int]:
+        reference_pixel_coordinate = utils.Point(x=1325, y=200)
+        return captured_image[int(reference_pixel_coordinate.y)][
+            int(reference_pixel_coordinate.x)
+        ]
 
     def is_menu_present(self, captured_image: cv2.typing.MatLike) -> bool:
         assert self.is_menu_present_reference is not None

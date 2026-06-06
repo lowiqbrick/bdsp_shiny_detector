@@ -1,14 +1,19 @@
 import os
 import cv2
-import hashlib
+from specific_pokemon import PokemonSearchEngine
+
 
 if __name__ == "__main__":
+    search_engine = PokemonSearchEngine()
+    assert search_engine.giratina_menu_reference is not None
+
     # Use absolute path relative to this script's location
     script_dir = os.path.dirname(os.path.abspath(__file__))
     reference_folder = script_dir + "/"
 
-    # Store hashes of pixel data instead of full images to save memory
-    processed_hashes = set()
+    processed_pixels = [
+        search_engine.get_giratina_ref_pixel(search_engine.giratina_menu_reference)
+    ]
     deleted_images = 0
 
     for filename in os.listdir(reference_folder):
@@ -26,13 +31,17 @@ if __name__ == "__main__":
         if image is None:
             continue
 
-        # Calculate a hash of the pixel buffer
-        image_hash = hashlib.md5(image.tobytes()).hexdigest()
-
-        if image_hash in processed_hashes:
+        if any(
+            (
+                processed_pixels[0][0] == pixel[0]
+                and processed_pixels[0][1] == pixel[1]
+                and processed_pixels[0][2] == pixel[2]
+            )
+            for pixel in processed_pixels
+        ):
             os.remove(filepath)
             deleted_images += 1
         else:
-            processed_hashes.add(image_hash)
+            processed_pixels.append(search_engine.get_giratina_ref_pixel(image))
 
     # print(f"Deleted {deleted_images} duplicate images.")
