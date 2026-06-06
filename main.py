@@ -74,7 +74,7 @@ def image_processing(
         + f"s period (av {loop_structs.macro_duration.get_duration_str()});"
     )
     if loop_structs.search_engine.state == specific_pokemon.SearchEngineState.APPEARING:
-        loop_structs.logger.add_printout(" palkia appears;")
+        loop_structs.logger.add_printout(" pokemon appears;")
     if loop_structs.search_engine.state == specific_pokemon.SearchEngineState.MENU:
         loop_structs.logger.add_printout(" menu;")
 
