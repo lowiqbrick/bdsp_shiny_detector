@@ -31,11 +31,13 @@ if __name__ == "__main__":
         if image is None:
             continue
 
+        current_pixel = search_engine.get_giratina_ref_pixel(image)
+
         if any(
             (
-                processed_pixels[0][0] == pixel[0]
-                and processed_pixels[0][1] == pixel[1]
-                and processed_pixels[0][2] == pixel[2]
+                current_pixel[0] == pixel[0]
+                and current_pixel[1] == pixel[1]
+                and current_pixel[2] == pixel[2]
             )
             for pixel in processed_pixels
         ):
