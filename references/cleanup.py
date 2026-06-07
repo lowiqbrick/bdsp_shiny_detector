@@ -17,7 +17,11 @@ if __name__ == "__main__":
     deleted_images = 0
 
     for filename in os.listdir(reference_folder):
-        if filename == "cleanup.py" or filename.startswith("."):
+        if (
+            filename == "cleanup.py"
+            or filename.startswith(".")
+            or filename.endswith(".py")
+        ):
             continue
 
         filepath = reference_folder + filename
