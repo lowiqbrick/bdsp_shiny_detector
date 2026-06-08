@@ -54,7 +54,7 @@ class PokemonSearchEngine:
         return diff_percent < 1.5
 
     def get_giratina_ref_pixel(self, captured_image: cv2.typing.MatLike) -> list[int]:
-        reference_pixel_coordinate = utils.Point(x=1325, y=200)
+        reference_pixel_coordinate = utils.Point(x=1330, y=400)
         return captured_image[int(reference_pixel_coordinate.y)][
             int(reference_pixel_coordinate.x)
         ]
