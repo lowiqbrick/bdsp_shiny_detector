@@ -120,6 +120,13 @@ def loop_update(
         print(loop_structs.logger.print(), end="")
     loop_variables.period_length_last_loop = loop_structs.period_timer.get_passed_time()
 
+    # take sample images
+    loop_structs.period_imager.take_image(
+        loop_structs.period_timer.get_passed_time(),
+        frame,
+        loop_structs.macro_duration.time_for_shiny(),
+    )
+
     # update for next period
     if not is_detected and loop_variables.is_last_detected:
         loop_structs.macro_duration.update(loop_variables.period_length_last_loop)
