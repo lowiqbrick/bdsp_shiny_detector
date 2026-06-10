@@ -6,9 +6,10 @@ from enum import Enum
 
 class SearchEngineState(Enum):
     UNINITIALIZED = 1
-    NOTHING_DETECTED = 2
+    RELOAD_GAME = 2
     APPEARING = 3
-    MENU = 4
+    POKEMON_SEND_OUT = 4
+    MENU = 5
 
 
 class PokemonSearchEngine:
@@ -81,14 +82,25 @@ class PokemonSearchEngine:
         # only change to nothing detected after certain detection
         # to prevent startup problems
         elif self.state != SearchEngineState.UNINITIALIZED:
-            self.state = SearchEngineState.NOTHING_DETECTED
+            if (
+                self.state == SearchEngineState.APPEARING
+                and not is_appearing
+                and not is_menu_present
+            ):
+                self.state = SearchEngineState.POKEMON_SEND_OUT
+            elif (
+                self.state == SearchEngineState.MENU
+                and not is_appearing
+                and not is_menu_present
+            ):
+                self.state = SearchEngineState.RELOAD_GAME
 
     def update_current_duration_timer(self, last_state: SearchEngineState):
         # reset/start duration timer
         # on disappearing textbox
         if (
             last_state == SearchEngineState.APPEARING
-            and self.state == SearchEngineState.NOTHING_DETECTED
+            and self.state == SearchEngineState.POKEMON_SEND_OUT
         ):
             self.current_duration_start = time.time()
 
@@ -105,16 +117,21 @@ class PokemonSearchEngine:
         # save/compare timer on menu detection
         # on previous cycle
         current_duration = time.time() - self.current_duration_start
+
+        # initialise the duration until menu
         if (
-            self.state == SearchEngineState.MENU
-            and last_state == SearchEngineState.NOTHING_DETECTED
+            self.duration_appear_to_menu is None
+            and self.state == SearchEngineState.MENU
+        ):
+            self.duration_appear_to_menu = current_duration
+
+        if (
+            self.state == SearchEngineState.POKEMON_SEND_OUT
+            and self.duration_appear_to_menu is not None
         ):
             if self.current_duration_start is not None:
-                # no reference time saved
-                if self.duration_appear_to_menu is None:
-                    self.duration_appear_to_menu = current_duration
                 # reference time saved
-                elif self.is_menu_present_late(current_duration):
+                if self.is_menu_present_late(current_duration):
                     return True
         return False
 

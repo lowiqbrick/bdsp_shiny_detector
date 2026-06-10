@@ -1,5 +1,6 @@
 import main
 import utils
+import specific_pokemon
 import pytest
 import cv2
 from gpiozero import LED, Device
@@ -38,12 +39,20 @@ def main_cycle(
     # pokemon appears
     main_iteration(appear_image, controller, loop_structs, loop_variables)
     time.sleep(list_timings[1])
+    assert (
+        loop_structs.search_engine.state == specific_pokemon.SearchEngineState.APPEARING
+    )
     # time between appearance and menu
     main_iteration(black_image, controller, loop_structs, loop_variables)
     time.sleep(list_timings[2])
+    assert (
+        loop_structs.search_engine.state
+        == specific_pokemon.SearchEngineState.POKEMON_SEND_OUT
+    )
     # menu shows up
     main_iteration(menu_image, controller, loop_structs, loop_variables)
     time.sleep(list_timings[3])
+    assert loop_structs.search_engine.state == specific_pokemon.SearchEngineState.MENU
 
 
 def test_regular():
@@ -131,7 +140,7 @@ def test_fail_on_irregular():
             shiny_timing,
             black_image,
             appear_image,
-            menu_image,
+            black_image,
             controller,
             loop_structs,
             loop_variables,

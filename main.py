@@ -5,7 +5,6 @@ import os
 from gpiozero import LED
 
 import utils
-import specific_pokemon
 
 
 def main():
@@ -73,10 +72,7 @@ def image_processing(
         + utils.period_to_str(round(loop_structs.period_timer.get_passed_time(), 2))
         + f"s period (av {loop_structs.macro_duration.get_duration_str()});"
     )
-    if loop_structs.search_engine.state == specific_pokemon.SearchEngineState.APPEARING:
-        loop_structs.logger.add_printout(" pokemon appears;")
-    if loop_structs.search_engine.state == specific_pokemon.SearchEngineState.MENU:
-        loop_structs.logger.add_printout(" menu;")
+    loop_structs.logger.add_printout(f" state {loop_structs.search_engine.state.name};")
 
     is_detected = loop_structs.search_engine.is_menu_present(frame)
 
