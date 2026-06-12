@@ -1,6 +1,7 @@
 import cv2
 import utils
 import numpy as np
+import specific_pokemon
 
 
 def black_image_part(
@@ -105,19 +106,22 @@ def gray_comparison_image(
 
 
 if __name__ == "__main__":
-    giratina_appears = cv2.imread("references/encounter_2026_6_8_0_1_28_652037.png")
-    giratina2 = cv2.imread("references/encounter_2026_6_7_23_45_24_223852.png")
-    assert giratina2 is not None
-
-    menu = cv2.imread("selected_references/menu_present.png")
-    assert giratina_appears is not None
-    assert menu is not None
-    overlap = giratina_appears.copy() / 2 + giratina2.copy() / 2
-    overlap = overlap.astype(np.uint8)
+    search_engine = specific_pokemon.PokemonSearchEngine()
+    palkia_appears = cv2.imread("selected_references/palkia_appears.png")
+    assert palkia_appears is not None
 
     cv2.imshow(
         "pixel example",
-        show_pixel_in_image(overlap, utils.Point(1330, 400), 100),
+        show_pixel_in_image(palkia_appears, utils.Point(515, 950), 100),
+    )
+    cv2.imshow(
+        "sliced",
+        cv2.cvtColor(
+            palkia_appears[
+                search_engine.APPEAR_BOX_TEMPLATE_Y, search_engine.APPEAR_BOX_TEMPLATE_X
+            ],
+            cv2.COLOR_BGR2GRAY,
+        ),
     )
     cv2.waitKey(1)
 

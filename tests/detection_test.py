@@ -35,26 +35,20 @@ def test_palkia_appearing():
     search_engine = specific_pokemon.PokemonSearchEngine()
     palkia_appearance = cv2.imread("selected_references/palkia_appears.png")
     assert palkia_appearance is not None
-    assert search_engine.is_palkia_appearing(palkia_appearance)
-
-
-def test_palkia_appearing_false():
-    search_engine = specific_pokemon.PokemonSearchEngine()
-    black_image = np.zeros((1080, 1920, 3))
-    assert not search_engine.is_palkia_appearing(black_image)
+    assert search_engine.is_appearing(palkia_appearance)
 
 
 def test_giratina_appearing():
     search_engine = specific_pokemon.PokemonSearchEngine()
     giratina_appearance = cv2.imread("selected_references/giratina_appears.png")
     assert giratina_appearance is not None
-    assert search_engine.is_giratina_appearing(giratina_appearance)
+    assert search_engine.is_appearing(giratina_appearance)
 
 
-def test_giratina_appearing_false():
+def test_appearing_false():
     search_engine = specific_pokemon.PokemonSearchEngine()
     black_image = np.zeros((1080, 1920, 3))
-    assert not search_engine.is_giratina_appearing(black_image)
+    assert not search_engine.is_appearing(black_image)
 
 
 def test_is_menu_present():

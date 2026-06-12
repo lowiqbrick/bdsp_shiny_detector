@@ -1,6 +1,7 @@
 import cv2
 import time
 import utils
+import numpy as np
 from enum import Enum
 
 
@@ -14,6 +15,18 @@ class SearchEngineState(Enum):
 
 class PokemonSearchEngine:
     MENU_TIMEOUT = 1.0
+    # define the points that specify the area from which the
+    # template matching template is taken from
+    APPEAR_BOX_TEMPLATE_X = slice(315, 515)
+    APPEAR_BOX_TEMPLATE_Y = slice(910, 950)
+    # define the start and end of the area over which the
+    # template will be matched (width of the slide)
+    # start: beginning of search box
+    APPEAR_BOX_SEARCH_START = 250
+    # end: end of search box + (width of template)
+    APPEAR_BOX_SEARCH_END = 400 + (
+        APPEAR_BOX_TEMPLATE_X.stop - APPEAR_BOX_TEMPLATE_X.start
+    )
 
     def __init__(self):
         self.palkia_appears_reference = cv2.imread(
@@ -35,24 +48,45 @@ class PokemonSearchEngine:
         assert self.giratina_appearing_reference is not None
         assert self.giratina_menu_reference is not None
         assert self.is_menu_present_reference is not None
-
-    def is_palkia_appearing(self, captured_image: cv2.typing.MatLike) -> bool:
-        assert self.palkia_appears_reference is not None
-        # Compare the status bar area to see if the pokemon is present
-        diff_percent = utils.get_difference_percentage(
-            self.palkia_appears_reference, captured_image, utils.appearing_textbox()
+        self.appears_template = cv2.cvtColor(
+            self.palkia_appears_reference.copy()[
+                self.APPEAR_BOX_TEMPLATE_Y, self.APPEAR_BOX_TEMPLATE_X
+            ],
+            cv2.COLOR_BGR2GRAY,
         )
+        assert self.appears_template is not None
+        assert self.appears_template.dtype == np.uint8
 
-        return diff_percent < 1.5
+    def is_appearing(
+        self, captured_image: cv2.typing.MatLike, threshold: float = 0.95
+    ) -> bool:
+        assert self.appears_template is not None
 
-    def is_giratina_appearing(self, captured_image: cv2.typing.MatLike) -> bool:
-        assert self.giratina_appearing_reference is not None
-        # Compare the status bar area to see if the pokemon is present
-        diff_percent = utils.get_difference_percentage(
-            self.giratina_appearing_reference, captured_image, utils.appearing_textbox()
+        # slice given image
+        captured_sliced = (
+            captured_image[
+                # same height dimensions as template
+                self.APPEAR_BOX_TEMPLATE_Y,
+                self.APPEAR_BOX_SEARCH_START : self.APPEAR_BOX_SEARCH_END,
+            ]
+            .copy()
+            .astype(np.uint8)
         )
+        # convert to grayscale
+        gray_image = cv2.cvtColor(
+            captured_sliced,
+            cv2.COLOR_BGR2GRAY,
+        )
+        # template matching
+        result = cv2.matchTemplate(
+            image=gray_image, templ=self.appears_template, method=cv2.TM_CCOEFF_NORMED
+        ).flatten()
 
-        return diff_percent < 1.5
+        # no template match yields a tuple with an empty array
+        if len(np.where(result >= threshold)[0]) == 0:
+            return False
+        else:
+            return True
 
     def get_giratina_ref_pixel(self, captured_image: cv2.typing.MatLike) -> list[int]:
         reference_pixel_coordinate = utils.Point(x=1330, y=400)
@@ -71,9 +105,7 @@ class PokemonSearchEngine:
         return diff_percent < 1.5
 
     def update_state(self, frame: cv2.typing.MatLike):
-        is_appearing = self.is_giratina_appearing(frame) or self.is_palkia_appearing(
-            frame
-        )
+        is_appearing = self.is_appearing(frame)
         is_menu_present = self.is_menu_present(frame)
         if is_appearing:
             self.state = SearchEngineState.APPEARING

@@ -3,6 +3,7 @@
         "averager",
         "BDSP",
         "BUFFERSIZE",
+        "CCOEFF",
         "Dialga",
         "giratina",
         "gpiozero",
@@ -12,6 +13,7 @@
         "imwrite",
         "mewtwo",
         "palkia",
+        "templ",
         "tobytes",
         "Zasluke"
     ],
