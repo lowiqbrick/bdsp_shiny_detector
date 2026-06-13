@@ -9,7 +9,7 @@ class SearchEngineState(Enum):
     UNINITIALIZED = 1
     RELOAD_GAME = 2
     APPEARING = 3
-    POKEMON_SEND_OUT = 1
+    POKEMON_SEND_OUT = 4
     MENU = 5
 
 
