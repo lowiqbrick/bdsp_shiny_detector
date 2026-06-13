@@ -2,6 +2,17 @@ import os
 import cv2
 from specific_pokemon import PokemonSearchEngine
 
+PIXEL_CLOSE_THRESHOLD = 5
+
+
+def pixels_close(
+    pixel1: list[int],
+    pixel2: list[int],
+) -> bool:
+    assert len(pixel1) == 3
+    assert len(pixel1) == len(pixel2)
+    return all(abs(p1 - p2) < PIXEL_CLOSE_THRESHOLD for p1, p2 in zip(pixel1, pixel2))
+
 
 if __name__ == "__main__":
     search_engine = PokemonSearchEngine()
@@ -37,14 +48,7 @@ if __name__ == "__main__":
 
         current_pixel = search_engine.get_giratina_ref_pixel(image)
 
-        if any(
-            (
-                current_pixel[0] == pixel[0]
-                and current_pixel[1] == pixel[1]
-                and current_pixel[2] == pixel[2]
-            )
-            for pixel in processed_pixels
-        ):
+        if any(pixels_close(pixel, current_pixel) for pixel in processed_pixels):
             os.remove(filepath)
             deleted_images += 1
         else:
