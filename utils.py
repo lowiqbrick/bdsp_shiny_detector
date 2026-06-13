@@ -1,8 +1,6 @@
 import cv2
 import os
 import sms
-import utils
-import specific_pokemon
 import time
 import datetime
 import subprocess
@@ -246,19 +244,21 @@ class MacroDuration:
 class LoopStructs:
     def __init__(self):
         # load all reference images
+        import specific_pokemon
+
         self.search_engine = specific_pokemon.PokemonSearchEngine()
         # averaging pfs values
-        self.fps_averager = utils.FPSAverager(60)
+        self.fps_averager = FPSAverager(60)
         # status printer
-        self.logger = utils.LoopReporter()
+        self.logger = LoopReporter()
         # sms notification (not mandatory)
         self.sender = sms.SMSSender()
         # keep time of the current period
-        self.period_timer = utils.PeriodTime()
+        self.period_timer = PeriodTime()
         # take an image every period
-        self.period_imager = utils.PeriodImager()
+        self.period_imager = PeriodImager()
         # adjust the macro duration dynamically
-        self.macro_duration = utils.MacroDuration()
+        self.macro_duration = MacroDuration()
 
 
 class LoopVariables:

@@ -88,12 +88,6 @@ class PokemonSearchEngine:
         else:
             return True
 
-    def get_giratina_ref_pixel(self, captured_image: cv2.typing.MatLike) -> list[int]:
-        reference_pixel_coordinate = utils.Point(x=1330, y=400)
-        return captured_image[int(reference_pixel_coordinate.y)][
-            int(reference_pixel_coordinate.x)
-        ]
-
     def is_menu_present(self, captured_image: cv2.typing.MatLike) -> bool:
         assert self.is_menu_present_reference is not None
 

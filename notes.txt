@@ -22,3 +22,6 @@ MY_NUMBER=<my number>
 
 # copypaste reference
 ~
+
+# call files in submodules
+python3 -m references.cleanup
