@@ -107,21 +107,18 @@ def gray_comparison_image(
 
 if __name__ == "__main__":
     search_engine = specific_pokemon.PokemonSearchEngine()
-    palkia_appears = cv2.imread("selected_references/palkia_appears.png")
-    assert palkia_appears is not None
+    giratina_menu = cv2.imread("selected_references/giratina_menu.png")
+    assert giratina_menu is not None
 
     cv2.imshow(
         "pixel example",
-        show_pixel_in_image(palkia_appears, utils.Point(515, 950), 100),
+        show_pixel_in_image(giratina_menu, utils.Point(1890, 825), 100),
     )
     cv2.imshow(
-        "sliced",
-        cv2.cvtColor(
-            palkia_appears[
-                search_engine.APPEAR_BOX_TEMPLATE_Y, search_engine.APPEAR_BOX_TEMPLATE_X
-            ],
-            cv2.COLOR_BGR2GRAY,
-        ),
+        "slice",
+        giratina_menu[
+            search_engine.MENU_BOX_TEMPLATE_Y, search_engine.MENU_BOX_TEMPLATE_X
+        ],
     )
     cv2.waitKey(1)
 

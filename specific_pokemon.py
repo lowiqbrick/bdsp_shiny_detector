@@ -1,6 +1,5 @@
 import cv2
 import time
-import utils
 import numpy as np
 from enum import Enum
 
@@ -27,6 +26,12 @@ class PokemonSearchEngine:
     APPEAR_BOX_SEARCH_END = 400 + (
         APPEAR_BOX_TEMPLATE_X.stop - APPEAR_BOX_TEMPLATE_X.start
     )
+    # template menu
+    MENU_BOX_TEMPLATE_X = slice(1550, 1890)
+    MENU_BOX_TEMPLATE_Y = slice(750, 825)
+    MENU_BOX_SEARCH_START = 1500
+    MENU_BOX_SEARCH_Y_LIMIT = 1920
+    MENU_BOX_SEARCH_END = 1920 - (MENU_BOX_TEMPLATE_X.stop - MENU_BOX_TEMPLATE_X.start)
 
     def __init__(self):
         self.palkia_appears_reference = cv2.imread(
@@ -56,6 +61,15 @@ class PokemonSearchEngine:
         )
         assert self.appears_template is not None
         assert self.appears_template.dtype == np.uint8
+        self.menu_template = cv2.cvtColor(
+            self.giratina_menu_reference.copy()[
+                self.MENU_BOX_TEMPLATE_Y,
+                self.MENU_BOX_TEMPLATE_X,
+            ],
+            cv2.COLOR_BGR2GRAY,
+        )
+        assert self.menu_template is not None
+        assert self.menu_template.dtype == np.uint8
 
     def is_appearing(
         self, captured_image: cv2.typing.MatLike, threshold: float = 0.95
@@ -88,15 +102,35 @@ class PokemonSearchEngine:
         else:
             return True
 
-    def is_menu_present(self, captured_image: cv2.typing.MatLike) -> bool:
-        assert self.is_menu_present_reference is not None
+    def is_menu_present(
+        self, captured_image: cv2.typing.MatLike, threshold: float = 0.95
+    ) -> bool:
+        assert self.menu_template is not None
 
-        # Compare the entire pokemon sprite area
-        diff_percent = utils.get_difference_percentage(
-            self.is_menu_present_reference, captured_image, utils.fight_menu()
+        # slice given image
+        captured_sliced = (
+            captured_image[
+                self.MENU_BOX_TEMPLATE_Y,
+                self.MENU_BOX_SEARCH_START : self.MENU_BOX_SEARCH_Y_LIMIT - 1,
+            ]
+            .copy()
+            .astype(np.uint8)
         )
+        # convert to grayscale
+        gray_image = cv2.cvtColor(
+            captured_sliced,
+            cv2.COLOR_BGR2GRAY,
+        )
+        # template matching
+        result = cv2.matchTemplate(
+            image=gray_image, templ=self.menu_template, method=cv2.TM_CCOEFF_NORMED
+        ).flatten()
 
-        return diff_percent < 1.5
+        # no template match yields a tuple with an empty array
+        if len(np.where(result >= threshold)[0]) == 0:
+            return False
+        else:
+            return True
 
     def update_state(self, frame: cv2.typing.MatLike):
         is_appearing = self.is_appearing(frame)
