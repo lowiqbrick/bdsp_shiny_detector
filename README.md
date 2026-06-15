@@ -30,11 +30,9 @@ The macro used in this project is shown in the image above. The image is taken f
 
 It is supposed to be started on the home-screen of the switch console. Once started it starts the game,loads the save file, starts the fight with a stationary legendary pokemon and closes the game for the next cycle.
 
-This macro was used to successfully detect a giratina, though it should work for every stationary encounter.
+This macro was used to successfully detect a giratina, though it should work for every stationary encounter. Some tweaking to the timings might be necessary.
 
-### Dialga/Palkia
-
-![image](readme_images/potential_dialga_palkia_macro.png)Dialga/Palkia represent an exception to the general macro, since the player needs to walk forward, to get the encounter started. A macro with limited testing for Dialga/Palkia can be found above.
+Additional information may be gained [here](record.md).
 
 ## Hardware
 
