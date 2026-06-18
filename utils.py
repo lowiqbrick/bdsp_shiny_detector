@@ -215,7 +215,7 @@ class MacroDuration:
         self._old_weight = 0.9
         self._new_weight = 1 - self._old_weight
         self._duration = None
-        self._time_for_shiny_offset = 4.00
+        self._time_for_shiny_offset = 0.5
 
     def update(self, new_duration: float):
         if new_duration <= 0:
