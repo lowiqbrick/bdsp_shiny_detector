@@ -145,4 +145,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nmanual intervention")
     finally:
-        print("\nprogram ended")
+        print("\nprogram ended at " + str(datetime.datetime.now()))
