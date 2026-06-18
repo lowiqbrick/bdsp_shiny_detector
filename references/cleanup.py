@@ -4,7 +4,7 @@ import cv2
 from utils import Point
 from specific_pokemon import PokemonSearchEngine
 
-PIXEL_CLOSE_THRESHOLD = 5
+PIXEL_CLOSE_THRESHOLD = 10
 PIXEL_CLOSE_PERCENTAGE = 0.9
 
 
