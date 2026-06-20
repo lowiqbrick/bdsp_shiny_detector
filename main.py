@@ -1,7 +1,6 @@
 import cv2
 import time
 import datetime
-import os
 from gpiozero import LED
 
 import utils
@@ -60,7 +59,7 @@ def image_processing(
 
     loop_structs.logger.add_printout("got frame;")
     # display frame
-    if "PYTEST_CURRENT_TEST" not in os.environ:
+    if utils.is_regular_operation():
         cv2.imshow("HDMI Video Capture", cv2.resize(src=frame, dsize=(1000, 500)))
         cv2.waitKey(1)
 
@@ -86,7 +85,7 @@ def handle_shiny_found(frame, controller, loop_structs):
     utils.save_shiny(frame)
     controller.on()
     loop_structs.logger.add_printout("shiny found omg !!!!11111eleven")
-    if "PYTEST_CURRENT_TEST" not in os.environ:
+    if utils.is_regular_operation():
         print(loop_structs.logger.print(), end="")
 
     date_time = str(datetime.datetime.now())
@@ -112,7 +111,7 @@ def loop_update(
         loop_structs.logger.add_printout(
             " fps: " + str(loop_structs.fps_averager.get_fps()) + ";"
         )
-    if "PYTEST_CURRENT_TEST" not in os.environ:
+    if utils.is_regular_operation():
         print(loop_structs.logger.print(), end="")
     loop_variables.period_length_last_loop = loop_structs.period_timer.get_passed_time()
 

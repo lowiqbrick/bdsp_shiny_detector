@@ -90,7 +90,7 @@ def get_difference_percentage(
 
 
 def save_shiny(image: cv2.typing.MatLike):
-    if "PYTEST_CURRENT_TEST" not in os.environ:
+    if is_regular_operation():
         date_time = datetime.datetime.now()
         cv2.imwrite(
             "references/suspected_shiny_"
@@ -162,7 +162,7 @@ class PeriodImager:
         self.__image_taken = False
 
     def save_encounter(self, image: cv2.typing.MatLike):
-        if "PYTEST_CURRENT_TEST" not in os.environ:
+        if is_regular_operation():
             date_time = datetime.datetime.now()
             cv2.imwrite(
                 "references/encounter_"
@@ -279,6 +279,15 @@ class LoopStructs:
 
         if current_duration >= (macro_duration * timeout_factor):
             raise NoMenuAppeared(timeout_factor)
+
+
+def is_regular_operation() -> bool:
+    """
+    # Return
+    returns True if 'PYTEST_CURRENT_TEST' is not in the environment variables,
+    False otherwise
+    """
+    return "PYTEST_CURRENT_TEST" not in os.environ
 
 
 class LoopVariables:

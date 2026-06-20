@@ -2,6 +2,8 @@ import os
 from twilio.rest import Client
 import time
 
+import utils
+
 
 class SMSSender:
     # in seconds
@@ -23,7 +25,7 @@ class SMSSender:
             return False
 
     def send(self, message: str):
-        if self.to_address is None and "PYTEST_CURRENT_TEST" not in os.environ:
+        if self.to_address is None and utils.is_regular_operation():
             print("\nno address given\n")
 
         assert self.to_address is not None
