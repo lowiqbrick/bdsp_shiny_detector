@@ -99,7 +99,7 @@ def test_regular():
     assert loop_variables.reset_counter == 4
 
 
-def test_fail_on_irregular():
+def test_fail_on_no_menu():
     # expect an exception to be raised
     with pytest.raises(utils.MenuTimeout):
         appear_image = cv2.imread("selected_references/palkia_appears.png")
@@ -141,6 +141,65 @@ def test_fail_on_irregular():
             black_image,
             appear_image,
             black_image,
+            controller,
+            loop_structs,
+            loop_variables,
+        )
+
+
+def test_fail_on_too_long_cycle():
+    # expect an exception to be raised
+    with pytest.raises(utils.NoMenuAppeared):
+        appear_image = cv2.imread("selected_references/palkia_appears.png")
+        menu_image = cv2.imread("selected_references/menu_present.png")
+        assert appear_image is not None
+        assert menu_image is not None
+        black_image = np.zeros((1080, 1920, 3))
+        loop_structs = utils.LoopStructs()
+        loop_variables = utils.LoopVariables()
+        controller = LED(21)
+        regular_timing = [0.5, 0.5, 0.5, 0.5]
+
+        # get through startup process
+        main_cycle(
+            regular_timing,
+            black_image,
+            appear_image,
+            menu_image,
+            controller,
+            loop_structs,
+            loop_variables,
+        )
+
+        for _ in range(0, 3):
+            main_cycle(
+                regular_timing,
+                black_image,
+                appear_image,
+                menu_image,
+                controller,
+                loop_structs,
+                loop_variables,
+            )
+
+        macro_duration = loop_structs.macro_duration.get_duration()
+        assert macro_duration is not None
+        time.sleep(10)
+        macro_duration = loop_structs.macro_duration.get_duration()
+        assert macro_duration is not None
+        menu_timeout_timing = [
+            0.5,
+            macro_duration * loop_structs.period_timer.get_timeout_factor(),
+            0.5,
+            0.5,
+        ]
+
+        # menu should come in too late
+        main_cycle(
+            menu_timeout_timing,
+            black_image,
+            appear_image,
+            menu_image,
             controller,
             loop_structs,
             loop_variables,

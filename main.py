@@ -123,6 +123,9 @@ def loop_update(
         loop_structs.macro_duration.time_for_shiny(),
     )
 
+    # check for too long duration of current cycle
+    loop_structs.sanity_check_duration_length()
+
     # update for next period
     if not is_detected and loop_variables.is_last_detected:
         loop_structs.macro_duration.update(loop_variables.period_length_last_loop)
@@ -141,6 +144,8 @@ if __name__ == "__main__":
     try:
         main()
     except utils.MenuTimeout as e:
+        print(f"\n{e.message}")
+    except utils.NoMenuAppeared as e:
         print(f"\n{e.message}")
     except KeyboardInterrupt:
         print("\nmanual intervention")

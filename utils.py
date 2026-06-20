@@ -202,12 +202,16 @@ class PeriodImager:
 class PeriodTime:
     def __init__(self) -> None:
         self.period_time = time.time() + 300
+        self.period_timeout_factor = 2.5
 
     def get_passed_time(self) -> float:
         return time.time() - self.period_time
 
     def reset(self):
         self.period_time = time.time()
+
+    def get_timeout_factor(self) -> float:
+        return self.period_timeout_factor
 
 
 class MacroDuration:
@@ -233,6 +237,9 @@ class MacroDuration:
         if self._duration is None or self._duration <= self._time_for_shiny_offset:
             return 300
         return self._duration - self._time_for_shiny_offset
+
+    def get_duration(self) -> float | None:
+        return self._duration
 
     def get_duration_str(self) -> str:
         if self._duration is None:
@@ -260,6 +267,19 @@ class LoopStructs:
         # adjust the macro duration dynamically
         self.macro_duration = MacroDuration()
 
+    def sanity_check_duration_length(self):
+        timeout_factor = self.period_timer.period_timeout_factor
+        current_duration = self.period_timer.get_passed_time()
+        macro_duration = self.macro_duration.get_duration()
+        if current_duration is None or macro_duration is None:
+            return
+
+        if current_duration <= 0:
+            return
+
+        if current_duration >= (macro_duration * timeout_factor):
+            raise NoMenuAppeared(timeout_factor)
+
 
 class LoopVariables:
     def __init__(self):
@@ -272,6 +292,17 @@ class LoopVariables:
 class MenuTimeout(Exception):
     def __init__(self):
         self.message = "the menu timed out"
+        super().__init__(self.message)
+
+
+class NoMenuAppeared(Exception):
+    """
+    custom exception for the case that the menu hasn't appeared in a long time,
+    potentially indication a malfunction of the macro
+    """
+
+    def __init__(self, interval_multiplier: float):
+        self.message = f"no menu appeared after approx {interval_multiplier} periods should have passed"
         super().__init__(self.message)
 
 
