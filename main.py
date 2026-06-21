@@ -148,5 +148,7 @@ if __name__ == "__main__":
         print(f"\n{e.message}")
     except KeyboardInterrupt:
         print("\nmanual intervention")
+    except Exception as e:
+        print(f"something unexpected went sideways: {e}")
     finally:
         print("\nprogram ended at " + str(datetime.datetime.now()))
