@@ -18,11 +18,14 @@ The list isn't meant to be exhaustive.
 ![image](readme_images/normal_heatran.jpeg)
 ![image](readme_images/shiny_heatran.jpeg)
 
-## Latias
+## Latias/Latios
 
 ![image](readme_images/latias_macro_success.png)
 ![image](readme_images/normal_latias.png)
 ![image](readme_images/shiny_latias.png)
+![image](readme_images/normal_latios.png)
+![image](readme_images/shiny_latios.png)
+
 
 ## Dialga/Palkia
 
