@@ -18,6 +18,12 @@ The list isn't meant to be exhaustive.
 ![image](readme_images/normal_heatran.jpeg)
 ![image](readme_images/shiny_heatran.jpeg)
 
+## Latias
+
+![image](readme_images/latias_macro_success.png)
+![image](readme_images/normal_latias.png)
+![image](readme_images/shiny_latias.png)
+
 ## Dialga/Palkia
 
 ![image](readme_images/potential_dialga_palkia_macro.png)Dialga/Palkia represent an exception to the general macro, since the player needs to walk forward, to get the encounter started. A macro with limited testing for Dialga/Palkia can be found above.
