@@ -26,6 +26,12 @@ The list isn't meant to be exhaustive.
 ![image](readme_images/normal_latios.png)
 ![image](readme_images/shiny_latios.png)
 
+## Arktos
+
+This used the same macro as Latias and Latios.
+![image](readme_images/normal_arktos.png)
+![image](readme_images/shiny_arktos.png)
+
 
 ## Dialga/Palkia
 
