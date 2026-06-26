@@ -32,6 +32,12 @@ This used the same macro as Latias and Latios.
 ![image](readme_images/normal_arktos.png)
 ![image](readme_images/shiny_arktos.png)
 
+## Mewtwo
+
+![image](readme_images/mewtwo_macro_success.png)
+![image](readme_images/normal_mewtwo.png)
+![image](readme_images/shiny_mewtwo.png)
+
 
 ## Dialga/Palkia
 
