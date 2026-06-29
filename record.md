@@ -38,6 +38,12 @@ This used the same macro as Latias and Latios.
 ![image](readme_images/normal_mewtwo.png)
 ![image](readme_images/shiny_mewtwo.png)
 
+## Lugia
+
+This used the same macro as Latias and Latios.
+![image](readme_images/normal_lugia.png)
+![image](readme_images/shiny_lugia.png)
+
 
 ## Dialga/Palkia
 
