@@ -202,7 +202,7 @@ class PeriodImager:
 class PeriodTime:
     def __init__(self) -> None:
         self.period_time = time.time() + 300
-        self.period_timeout_factor = 2.5
+        self.period_timeout_factor = 3.5
 
     def get_passed_time(self) -> float:
         return time.time() - self.period_time
