@@ -51,6 +51,11 @@ This used the same macro as Latias and Latios.
 ![image](readme_images/normal_kyogre.png)
 ![image](readme_images/shiny_kyogre.png)
 
+## Groudon
+
+This used the same macro as Kyogre.
+![image](readme_images/normal_groudon.png)
+![image](readme_images/shiny_groudon.png)
 
 ## Dialga/Palkia
 
