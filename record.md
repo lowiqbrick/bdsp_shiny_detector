@@ -57,6 +57,13 @@ This used the same macro as Kyogre.
 ![image](readme_images/normal_groudon.png)
 ![image](readme_images/shiny_groudon.png)
 
+## Rayquaza
+
+![image](readme_images/rayquaza_macro_success.png)
+![image](readme_images/normal_rayquaza.png)
+![image](readme_images/shiny_rayquaza.png)
+
+
 ## Dialga/Palkia
 
 ![image](readme_images/potential_dialga_palkia_macro.png)Dialga/Palkia represent an exception to the general macro, since the player needs to walk forward, to get the encounter started. A macro with limited testing for Dialga/Palkia can be found above.
