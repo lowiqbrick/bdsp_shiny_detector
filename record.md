@@ -63,6 +63,12 @@ This used the same macro as Kyogre.
 ![image](readme_images/normal_rayquaza.png)
 ![image](readme_images/shiny_rayquaza.png)
 
+## Regigigas
+
+![image](readme_images/regigigas_macro_success.png)
+![image](readme_images/normal_regigigas.png)
+![image](readme_images/shiny_regigigas.png)
+
 
 ## Dialga/Palkia
 
