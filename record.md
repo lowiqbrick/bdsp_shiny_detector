@@ -69,6 +69,11 @@ This used the same macro as Kyogre.
 ![image](readme_images/normal_regigigas.png)
 ![image](readme_images/shiny_regigigas.png)
 
+## Arceus
+
+![image](readme_images/arceus_macro_success.png)
+![image](readme_images/normal_arceus.png)
+![image](readme_images/shiny_arceus.png)
 
 ## Dialga/Palkia
 
